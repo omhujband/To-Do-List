@@ -1,48 +1,73 @@
-# ✅ My Productivity App
-<hr>
-My Productivity App is a simple yet effective web application designed to help users stay organized. It features a To-Do List for task management and a Notepad for writing down quick notes. Built using HTML, CSS, JavaScript, and Bootstrap, this app offers a clean interface and basic yet essential productivity tools—all in one place.
+# React + TypeScript + Vite
 
-<br>
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-# 🧩 Features
-<hr>
+Currently, two official plugins are available:
 
-📝 To-Do List
-- Add multiple tasks with ease
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-- Manage tasks efficiently with Up and Down buttons for manual sorting
+## React Compiler
 
-- Remove completed or unwanted tasks
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-🗒️ Notepad
-- Write and store quick notes or reminders
+## Expanding the ESLint configuration
 
-- Download notes anytime as a .txt file for future use
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-<br>
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-# 💡 Tech Stack
-<hr>
-Frontend: HTML, CSS, Bootstrap
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-Logic & Functionality: JavaScript
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
 
-<br>
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-# 📌 Future Scope 
-<hr>
-This is a very simple project created using fundamentals of web designing. Which I plan to enhance (if possible) in the near future. Adding Task deadline reminders or timers. 
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-And imporving the overall UI and responsiveness of the page.  
-
-<br>
-
-# 🧠 What I Learned
-<hr>
-DOM manipulation with JavaScript
-
-Handling user input and dynamic responsiveness
-
-File creation and download using JS
-
-Bootstrap Framework
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
