@@ -18,6 +18,7 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
     const [isAddingCard, setIsAddingCard] = useState(false);
     const [newCardTitle, setNewCardTitle] = useState('');
     const [menuOpen, setMenuOpen] = useState(false);
+    const [confirmDelete, setConfirmDelete] = useState(false);
 
     const {
         attributes,
@@ -104,6 +105,7 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
                         onClick={(e) => {
                             e.stopPropagation();
                             setMenuOpen(!menuOpen);
+                            setConfirmDelete(false);
                         }}
                         className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-600 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
                     >
@@ -122,18 +124,42 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
                             >
                                 <Pencil className="w-4 h-4" /> Rename
                             </button>
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (confirm('Delete this section and all its cards?')) {
-                                        deleteSection(workspaceId, section.id);
-                                    }
-                                    setMenuOpen(false);
-                                }}
-                                className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-neutral-700 hover:text-red-300 flex items-center gap-2 border-t border-neutral-700"
-                            >
-                                <Trash2 className="w-4 h-4" /> Delete
-                            </button>
+                            {confirmDelete ? (
+                                <div className="px-4 py-2 flex items-center justify-between border-t border-neutral-700 bg-red-900/20" onClick={(e) => e.stopPropagation()}>
+                                    <span className="text-sm font-medium text-red-400">Sure?</span>
+                                    <div className="flex gap-1">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                deleteSection(workspaceId, section.id);
+                                                setMenuOpen(false);
+                                            }}
+                                            className="px-2 py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded"
+                                        >
+                                            Yes
+                                        </button>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setConfirmDelete(false);
+                                            }}
+                                            className="px-2 py-1 text-xs bg-neutral-600 hover:bg-neutral-500 text-white rounded"
+                                        >
+                                            No
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setConfirmDelete(true);
+                                    }}
+                                    className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-neutral-700 hover:text-red-300 flex items-center gap-2 border-t border-neutral-700"
+                                >
+                                    <Trash2 className="w-4 h-4" /> Delete
+                                </button>
+                            )}
                         </div>
                     )}
                 </div>
