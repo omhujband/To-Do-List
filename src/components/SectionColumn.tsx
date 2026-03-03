@@ -62,7 +62,7 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
             <div
                 ref={setNodeRef}
                 style={style}
-                className="flex-shrink-0 w-80 bg-neutral-800/50 border-2 border-blue-500 rounded-2xl opacity-50 flex flex-col max-h-full"
+                className="flex-shrink-0 w-[320px] rounded-2xl opacity-50 flex flex-col max-h-full border border-neutral-700 bg-neutral-800/10"
             />
         );
     }
@@ -71,14 +71,14 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
         <div
             ref={setNodeRef}
             style={style}
-            className="flex-shrink-0 w-80 bg-neutral-800/80 rounded-2xl flex flex-col max-h-full"
+            className="flex-shrink-0 w-[320px] rounded-2xl flex flex-col max-h-full"
         >
             <div
                 {...attributes}
                 {...listeners}
-                className="p-4 flex items-center gap-3 cursor-grab rounded-t-2xl group hover:bg-neutral-700/50 transition-colors"
+                className="pb-4 flex items-center justify-between cursor-grab group transition-colors"
             >
-                <div className="flex-1 min-w-0 flex items-center gap-2">
+                <div className="flex items-center gap-3">
                     {isEditingTitle ? (
                         <input
                             autoFocus
@@ -90,12 +90,12 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
                                 if (e.key === 'Enter') handleRenameSubmit();
                                 if (e.key === 'Escape') setIsEditingTitle(false);
                             }}
-                            className="flex-1 bg-neutral-900 border border-blue-500 rounded px-2 py-1 text-white font-semibold focus:outline-none"
+                            className="bg-[#1A1D24] border border-blue-500 rounded px-2 py-1 text-white font-bold text-lg focus:outline-none w-32"
                         />
                     ) : (
-                        <h3 className="font-semibold text-white truncate">{section.title}</h3>
+                        <h3 className="font-bold text-lg text-white">{section.title}</h3>
                     )}
-                    <span className="bg-neutral-700 text-neutral-300 text-xs font-medium px-2 py-0.5 rounded-full">
+                    <span className="bg-[#1C202B] text-neutral-400 text-xs font-bold px-2 py-0.5 rounded-full">
                         {section.cards.length}
                     </span>
                 </div>
@@ -107,25 +107,25 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
                             setMenuOpen(!menuOpen);
                             setConfirmDelete(false);
                         }}
-                        className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-600 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                        className="p-1 text-neutral-500 hover:text-white transition-colors"
                     >
                         <MoreHorizontal className="w-5 h-5" />
                     </button>
 
                     {menuOpen && (
-                        <div className="absolute right-0 top-full mt-1 w-40 bg-neutral-800 border border-neutral-700 rounded-lg shadow-xl overflow-hidden z-20">
+                        <div className="absolute right-0 top-full mt-1 w-40 bg-[#1A1D24] border border-neutral-800 rounded-lg shadow-xl overflow-hidden z-20">
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     setIsEditingTitle(true);
                                     setMenuOpen(false);
                                 }}
-                                className="w-full text-left px-4 py-2 text-sm text-neutral-300 hover:bg-neutral-700 hover:text-white flex items-center gap-2"
+                                className="w-full text-left px-4 py-2 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white flex items-center gap-2"
                             >
                                 <Pencil className="w-4 h-4" /> Rename
                             </button>
                             {confirmDelete ? (
-                                <div className="px-4 py-2 flex items-center justify-between border-t border-neutral-700 bg-red-900/20" onClick={(e) => e.stopPropagation()}>
+                                <div className="px-4 py-2 flex items-center justify-between border-t border-neutral-800 bg-red-900/20" onClick={(e) => e.stopPropagation()}>
                                     <span className="text-sm font-medium text-red-400">Sure?</span>
                                     <div className="flex gap-1">
                                         <button
@@ -155,7 +155,7 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
                                         e.stopPropagation();
                                         setConfirmDelete(true);
                                     }}
-                                    className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-neutral-700 hover:text-red-300 flex items-center gap-2 border-t border-neutral-700"
+                                    className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-neutral-800/80 flex items-center gap-2 border-t border-neutral-800"
                                 >
                                     <Trash2 className="w-4 h-4" /> Delete
                                 </button>
@@ -165,7 +165,7 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
                 </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-3 pb-4 min-h-[150px] space-y-3 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto pb-4 min-h-[150px] space-y-4 custom-scrollbar">
                 <SortableContext items={section.cards.map((c) => c.id)} strategy={verticalListSortingStrategy}>
                     {section.cards.map((card) => (
                         <TaskCard key={card.id} card={card} workspaceId={workspaceId} sectionId={section.id} />
@@ -173,14 +173,14 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
                 </SortableContext>
 
                 {isAddingCard ? (
-                    <form onSubmit={handleAddCard} className="mt-3">
+                    <form onSubmit={handleAddCard} className="mt-2 bg-[#1A1D24] p-3 rounded-2xl border border-blue-500">
                         <textarea
                             autoFocus
                             value={newCardTitle}
                             onChange={(e) => setNewCardTitle(e.target.value)}
-                            placeholder="What needs to be done?"
-                            className="w-full bg-neutral-900 border border-blue-500 rounded-xl px-3 py-2 text-white text-sm focus:outline-none resize-none"
-                            rows={3}
+                            placeholder="Task name"
+                            className="w-full bg-transparent border-none text-white text-sm focus:outline-none resize-none"
+                            rows={2}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !e.shiftKey) {
                                     e.preventDefault();
@@ -193,14 +193,14 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
                             <button
                                 type="submit"
                                 disabled={!newCardTitle.trim()}
-                                className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                                className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
                             >
-                                Add Card
+                                Add Task
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setIsAddingCard(false)}
-                                className="text-neutral-400 hover:text-white px-3 py-1.5 text-sm font-medium transition-colors"
+                                className="text-neutral-400 hover:text-white px-2 py-1.5 text-xs font-semibold transition-colors"
                             >
                                 Cancel
                             </button>
@@ -209,9 +209,9 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
                 ) : (
                     <button
                         onClick={() => setIsAddingCard(true)}
-                        className="w-full py-2.5 flex items-center justify-center gap-2 text-neutral-400 hover:text-white hover:bg-neutral-700/50 rounded-xl transition-colors font-medium text-sm mt-2 border border-dashed border-transparent hover:border-neutral-600"
+                        className="w-full py-4 flex items-center justify-center gap-2 text-neutral-500 hover:text-white border border-dashed border-neutral-800 hover:border-neutral-600 rounded-2xl transition-all font-semibold text-sm mt-2 bg-[#13151D]/50"
                     >
-                        <Plus className="w-4 h-4" /> Add a card
+                        <Plus className="w-4 h-4" /> Add Task
                     </button>
                 )}
             </div>

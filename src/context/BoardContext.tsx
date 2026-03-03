@@ -3,6 +3,7 @@ import type { BoardState, Workspace, Section, Card, Subtask } from '../types';
 
 const defaultState: BoardState = {
     workspaces: [],
+    globalTasks: [],
     activeWorkspaceId: null,
 };
 
@@ -34,6 +35,9 @@ type BoardContextType = {
         newOverSectionCards: Card[]
     ) => void;
 
+    // Global Task Actions
+    createGlobalTask: (title: string) => void;
+
     // Subtask Actions
     createSubtask: (workspaceId: string, sectionId: string, cardId: string, title: string) => void;
     renameSubtask: (workspaceId: string, sectionId: string, cardId: string, subtaskId: string, newTitle: string) => void;
@@ -54,7 +58,12 @@ export const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         try {
             const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
             if (saved) {
-                return JSON.parse(saved);
+                const parsed = JSON.parse(saved);
+                // Ensure globalTasks exists for backward compatibility
+                if (!parsed.globalTasks) parsed.globalTasks = [];
+                // Reset active workspace on reload to always show dashboard
+                parsed.activeWorkspaceId = null;
+                return parsed;
             }
         } catch (e) {
             console.error('Failed to parse local storage data');
@@ -139,6 +148,12 @@ export const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         updateWorkspace(workspaceId, (w) => ({ ...w, sections: newSections }));
     };
 
+    // --- Global Tasks ---
+    const createGlobalTask = (title: string) => {
+        const newCard: Card = { id: `g-card-${generateId()}`, title, subtasks: [] };
+        setState(prev => ({ ...prev, globalTasks: [...(prev.globalTasks || []), newCard] }));
+    };
+
     // --- Cards ---
     const createCard = (workspaceId: string, sectionId: string, title: string) => {
         const newCard: Card = { id: `card-${generateId()}`, title, subtasks: [] };
@@ -146,10 +161,18 @@ export const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     const renameCard = (workspaceId: string, sectionId: string, cardId: string, newTitle: string) => {
+        if (workspaceId === 'global') {
+            setState(prev => ({ ...prev, globalTasks: (prev.globalTasks || []).map(t => t.id === cardId ? { ...t, title: newTitle } : t) }));
+            return;
+        }
         updateCard(workspaceId, sectionId, cardId, (c) => ({ ...c, title: newTitle }));
     };
 
     const deleteCard = (workspaceId: string, sectionId: string, cardId: string) => {
+        if (workspaceId === 'global') {
+            setState(prev => ({ ...prev, globalTasks: (prev.globalTasks || []).filter(t => t.id !== cardId) }));
+            return;
+        }
         updateSection(workspaceId, sectionId, (s) => ({
             ...s,
             cards: s.cards.filter((c) => c.id !== cardId),
@@ -180,6 +203,10 @@ export const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // --- Subtasks ---
     const createSubtask = (workspaceId: string, sectionId: string, cardId: string, title: string) => {
         const newSubtask: Subtask = { id: `sub-${generateId()}`, title, completed: false };
+        if (workspaceId === 'global') {
+            setState(prev => ({ ...prev, globalTasks: (prev.globalTasks || []).map(t => t.id === cardId ? { ...t, subtasks: [...t.subtasks, newSubtask] } : t) }));
+            return;
+        }
         updateCard(workspaceId, sectionId, cardId, (c) => ({
             ...c,
             subtasks: [...c.subtasks, newSubtask],
@@ -187,6 +214,10 @@ export const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     const renameSubtask = (workspaceId: string, sectionId: string, cardId: string, subtaskId: string, newTitle: string) => {
+        if (workspaceId === 'global') {
+            setState(prev => ({ ...prev, globalTasks: (prev.globalTasks || []).map(t => t.id === cardId ? { ...t, subtasks: t.subtasks.map(sub => sub.id === subtaskId ? { ...sub, title: newTitle } : sub) } : t) }));
+            return;
+        }
         updateCard(workspaceId, sectionId, cardId, (c) => ({
             ...c,
             subtasks: c.subtasks.map((sub) => (sub.id === subtaskId ? { ...sub, title: newTitle } : sub)),
@@ -194,6 +225,10 @@ export const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     const deleteSubtask = (workspaceId: string, sectionId: string, cardId: string, subtaskId: string) => {
+        if (workspaceId === 'global') {
+            setState(prev => ({ ...prev, globalTasks: (prev.globalTasks || []).map(t => t.id === cardId ? { ...t, subtasks: t.subtasks.filter(sub => sub.id !== subtaskId) } : t) }));
+            return;
+        }
         updateCard(workspaceId, sectionId, cardId, (c) => ({
             ...c,
             subtasks: c.subtasks.filter((sub) => sub.id !== subtaskId),
@@ -201,6 +236,10 @@ export const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     const toggleSubtaskComplete = (workspaceId: string, sectionId: string, cardId: string, subtaskId: string) => {
+        if (workspaceId === 'global') {
+            setState(prev => ({ ...prev, globalTasks: (prev.globalTasks || []).map(t => t.id === cardId ? { ...t, subtasks: t.subtasks.map(sub => sub.id === subtaskId ? { ...sub, completed: !sub.completed } : sub) } : t) }));
+            return;
+        }
         updateCard(workspaceId, sectionId, cardId, (c) => ({
             ...c,
             subtasks: c.subtasks.map((sub) => (sub.id === subtaskId ? { ...sub, completed: !sub.completed } : sub)),
@@ -224,6 +263,7 @@ export const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 deleteCard,
                 updateCardsWithinSection,
                 moveCardBetweenSections,
+                createGlobalTask,
                 createSubtask,
                 renameSubtask,
                 deleteSubtask,

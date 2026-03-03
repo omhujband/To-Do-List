@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useBoard } from '../context/BoardContext';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { ArrowLeft, Plus, Search, Bell, Settings, LayoutGrid } from 'lucide-react';
 import {
     DndContext,
     DragOverlay,
@@ -63,10 +63,8 @@ export const Board: React.FC = () => {
     const onDragOver = (event: DragOverEvent) => {
         const { active, over } = event;
         if (!over) return;
-
         const activeId = active.id;
         const overId = over.id;
-
         if (activeId === overId) return;
 
         const isActiveCard = active.data.current?.type === 'Card';
@@ -75,7 +73,6 @@ export const Board: React.FC = () => {
 
         if (!isActiveCard) return;
 
-        // Moving a card over another card
         if (isActiveCard && isOverCard) {
             const activeSectionId = activeWorkspace.sections.find(s => s.cards.some(c => c.id === activeId))?.id;
             const overSectionId = activeWorkspace.sections.find(s => s.cards.some(c => c.id === overId))?.id;
@@ -83,7 +80,6 @@ export const Board: React.FC = () => {
             if (!activeSectionId || !overSectionId) return;
 
             if (activeSectionId === overSectionId) {
-                // Move within same section
                 const section = activeWorkspace.sections.find(s => s.id === activeSectionId);
                 if (section) {
                     const oldIndex = section.cards.findIndex(c => c.id === activeId);
@@ -91,7 +87,6 @@ export const Board: React.FC = () => {
                     updateCardsWithinSection(activeWorkspace.id, section.id, arrayMove(section.cards, oldIndex, newIndex));
                 }
             } else {
-                // Move to different section (inter-section)
                 const aSection = activeWorkspace.sections.find(s => s.id === activeSectionId);
                 const oSection = activeWorkspace.sections.find(s => s.id === overSectionId);
 
@@ -111,7 +106,6 @@ export const Board: React.FC = () => {
             }
         }
 
-        // Moving a card over an empty section
         if (isActiveCard && isOverSection) {
             const activeSectionId = activeWorkspace.sections.find(s => s.cards.some(c => c.id === activeId))?.id;
             const overSectionId = overId as string;
@@ -145,7 +139,6 @@ export const Board: React.FC = () => {
 
         const isActiveSection = active.data.current?.type === 'Section';
 
-        // Section Reordering
         if (isActiveSection && over.data.current?.type === 'Section') {
             const oldIndex = activeWorkspace.sections.findIndex(s => s.id === activeId);
             const newIndex = activeWorkspace.sections.findIndex(s => s.id === overId);
@@ -155,24 +148,59 @@ export const Board: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-neutral-900 flex flex-col pt-16">
-            <header className="fixed top-0 left-0 right-0 h-16 bg-neutral-800 border-b border-neutral-700 flex items-center px-6 z-10 shadow-sm">
-                <button
-                    onClick={() => openWorkspace(null)}
-                    className="p-2 hover:bg-neutral-700 rounded-lg text-neutral-400 hover:text-white transition-colors mr-6"
-                    title="Back to Workspaces"
-                >
-                    <ArrowLeft className="w-5 h-5" />
-                </button>
-                <h1 className="text-xl font-bold text-white truncate max-w-sm tracking-tight text-white">
-                    {activeWorkspace.title}
-                </h1>
-                <div className="ml-auto text-sm text-neutral-400 font-medium bg-neutral-900/50 px-3 py-1.5 rounded-full border border-neutral-700">
-                    {activeWorkspace.sections.length} sections
+        <div className="min-h-full bg-[#0F1218] flex flex-col text-white">
+            {/* Top Navigation Bar Component (Mocked for Board layout) */}
+            <header className="px-8 h-20 flex items-center justify-between border-b border-neutral-800 shrink-0">
+                <div className="flex items-center gap-6">
+                    <button
+                        onClick={() => openWorkspace(null)}
+                        className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors"
+                        title="Back to Workspaces"
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                    </button>
+                    <div className="flex items-center gap-2 font-bold text-lg">
+                        <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
+                            <LayoutGrid className="w-4 h-4 text-white" />
+                        </div>
+                        Workspace
+                    </div>
+                    <nav className="flex items-center gap-6 ml-6 text-sm font-medium text-neutral-400">
+                        <button className="text-white border-b-2 border-blue-600 py-7">Board</button>
+                        <button className="hover:text-white transition-colors">Timeline</button>
+                        <button className="hover:text-white transition-colors">Calendar</button>
+                    </nav>
+                </div>
+
+                <div className="flex items-center gap-4">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+                        <input
+                            type="text"
+                            placeholder="Search tasks..."
+                            className="bg-[#1A1D24] border border-neutral-800 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-blue-500 text-white placeholder-neutral-500 w-64"
+                        />
+                    </div>
                 </div>
             </header>
 
-            <main className="flex-1 overflow-x-auto overflow-y-hidden p-6 pb-4">
+            {/* Board Header Title Area */}
+            <div className="px-8 py-8 shrink-0 flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight mb-2 text-white">
+                        {activeWorkspace.title}
+                    </h1>
+                    <p className="text-neutral-400 text-sm">
+                        Manage project stages and upcoming milestones
+                    </p>
+                </div>
+                <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-semibold flex items-center gap-2 transition-colors">
+                    <Plus className="w-5 h-5" />
+                    New Task
+                </button>
+            </div>
+
+            <main className="flex-1 overflow-x-auto overflow-y-hidden px-8 pb-4">
                 <DndContext
                     sensors={sensors}
                     collisionDetection={closestCorners}
@@ -180,7 +208,7 @@ export const Board: React.FC = () => {
                     onDragOver={onDragOver}
                     onDragEnd={onDragEnd}
                 >
-                    <div className="flex gap-6 h-full items-start board-layout">
+                    <div className="flex gap-6 h-full items-start pb-4">
                         <SortableContext
                             items={activeWorkspace.sections.map(s => s.id)}
                             strategy={horizontalListSortingStrategy}
@@ -190,17 +218,17 @@ export const Board: React.FC = () => {
                             ))}
                         </SortableContext>
 
-                        {/* Add Section Button relative at the end */}
+                        {/* Add Section Button */}
                         <div className="flex-shrink-0 w-80">
                             {isAddingSection ? (
-                                <form onSubmit={handleAddSection} className="bg-neutral-800/80 p-3 rounded-2xl border border-blue-500">
+                                <form onSubmit={handleAddSection} className="bg-[#13151D] border border-blue-500 p-3 rounded-2xl">
                                     <input
                                         autoFocus
                                         type="text"
                                         value={newSectionTitle}
                                         onChange={(e) => setNewSectionTitle(e.target.value)}
                                         placeholder="Section title..."
-                                        className="w-full bg-neutral-900 border border-neutral-700 rounded-xl px-3 py-2 text-white font-semibold focus:outline-none focus:border-blue-500 mb-3"
+                                        className="w-full bg-[#1A1D24] border border-neutral-700 rounded-xl px-3 py-2 text-white font-semibold focus:outline-none focus:border-blue-500 mb-3"
                                         onKeyDown={(e) => {
                                             if (e.key === 'Escape') setIsAddingSection(false);
                                         }}
@@ -225,9 +253,10 @@ export const Board: React.FC = () => {
                             ) : (
                                 <button
                                     onClick={() => setIsAddingSection(true)}
-                                    className="w-full h-14 bg-neutral-800/50 hover:bg-neutral-700/80 border-2 border-dashed border-neutral-700 hover:border-neutral-500 rounded-2xl flex items-center justify-center gap-2 text-neutral-400 hover:text-white font-semibold transition-all"
+                                    className="w-full h-24 bg-[#161923] hover:bg-[#1A1D24] border border-[#2A2E39] border-dashed rounded-2xl flex items-center justify-center gap-2 text-neutral-400 hover:text-white font-semibold transition-all"
                                 >
-                                    <Plus className="w-5 h-5" /> Add another section
+                                    <Plus className="w-5 h-5 text-neutral-500" />
+                                    Add New Section
                                 </button>
                             )}
                         </div>

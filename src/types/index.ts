@@ -24,5 +24,6 @@ export interface Workspace {
 
 export interface BoardState {
     workspaces: Workspace[];
+    globalTasks: Card[];
     activeWorkspaceId: string | null;
 }
