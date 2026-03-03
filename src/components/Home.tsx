@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useBoard } from '../context/BoardContext';
-import { Plus, Settings, Trash2, Search, Bell, MoreVertical, Rocket } from 'lucide-react';
+import { Plus, Settings, Trash2, Search, MoreVertical, Rocket } from 'lucide-react';
 
 // Predefined gradient classes for workspace cards to give that premium look
 const gradients = [

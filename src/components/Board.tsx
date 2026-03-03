@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useBoard } from '../context/BoardContext';
-import { ArrowLeft, Plus, Search, Bell, Settings, LayoutGrid } from 'lucide-react';
+import { ArrowLeft, Plus, Search, LayoutGrid } from 'lucide-react';
 import {
     DndContext,
     DragOverlay,
