@@ -56,7 +56,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ card, workspaceId, sectionId
             <div
                 ref={setNodeRef}
                 style={style}
-                className="bg-neutral-800 border-2 border-blue-500 rounded-xl p-4 opacity-50"
+                className="bg-surface border-2 border-primary rounded-xl p-4 opacity-50"
             />
         );
     }
@@ -65,13 +65,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({ card, workspaceId, sectionId
         <div
             ref={setNodeRef}
             style={style}
-            className="bg-neutral-800 border border-neutral-700 rounded-xl p-4 group cursor-default hover:border-neutral-600 transition-colors shadow-sm"
+            className="bg-surface border border-border-main rounded-xl p-4 group cursor-default hover:border-border-hover transition-colors shadow-sm"
         >
             <div className="flex items-start gap-2 mb-3">
                 <div
                     {...attributes}
                     {...listeners}
-                    className="mt-1 cursor-grab text-neutral-500 hover:text-white transition-colors"
+                    className="mt-1 cursor-grab text-text-muted hover:text-text-main transition-colors"
                 >
                     <GripVertical className="w-5 h-5" />
                 </div>
@@ -88,13 +88,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({ card, workspaceId, sectionId
                                     if (e.key === 'Enter') handleRenameSubmit();
                                     if (e.key === 'Escape') setIsEditingTitle(false);
                                 }}
-                                className="flex-1 bg-neutral-900 border border-blue-500 rounded px-2 py-1 text-white text-sm focus:outline-none"
+                                className="flex-1 bg-surface-hover border border-primary rounded px-2 py-1 text-text-main text-sm focus:outline-none"
                             />
                         </div>
                     ) : (
                         <h4
                             onClick={() => setIsExpanded(!isExpanded)}
-                            className="text-white font-medium text-sm break-words cursor-pointer hover:text-blue-400 transition-colors"
+                            className="text-text-main font-medium text-sm break-words cursor-pointer hover:text-primary transition-colors"
                         >
                             {card.title}
                         </h4>
@@ -104,13 +104,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({ card, workspaceId, sectionId
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                             onClick={() => setIsEditingTitle(true)}
-                            className="p-1 text-neutral-500 hover:text-white hover:bg-neutral-700 rounded"
+                            className="p-1 text-text-muted hover:text-text-main hover:bg-surface-hover rounded"
                         >
                             <Pencil className="w-4 h-4" />
                         </button>
                         <button
                             onClick={() => deleteCard(workspaceId, sectionId, card.id)}
-                            className="p-1 text-neutral-500 hover:text-red-400 hover:bg-neutral-700 rounded"
+                            className="p-1 text-text-muted hover:text-red-500 hover:bg-surface-hover rounded"
                         >
                             <Trash2 className="w-4 h-4" />
                         </button>
@@ -123,13 +123,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({ card, workspaceId, sectionId
                     className="flex items-center gap-2 text-xs font-medium cursor-pointer"
                     onClick={() => setIsExpanded(!isExpanded)}
                 >
-                    <CheckSquare className="w-4 h-4 text-neutral-400" />
-                    <span className={clsx(completedSubtasks === totalSubtasks ? 'text-green-500' : 'text-neutral-400')}>
+                    <CheckSquare className="w-4 h-4 text-text-muted" />
+                    <span className={clsx(completedSubtasks === totalSubtasks ? 'text-emerald-500' : 'text-text-muted')}>
                         {completedSubtasks}/{totalSubtasks}
                     </span>
-                    <div className="flex-1 h-1.5 bg-neutral-700 rounded-full overflow-hidden">
+                    <div className="flex-1 h-1.5 bg-surface-hover rounded-full overflow-hidden border border-border-main">
                         <div
-                            className={clsx('h-full transition-all', completedSubtasks === totalSubtasks ? 'bg-green-500' : 'bg-blue-500')}
+                            className={clsx('h-full transition-all', completedSubtasks === totalSubtasks ? 'bg-emerald-500' : 'bg-primary')}
                             style={{ width: `${progressPercent}%` }}
                         />
                     </div>
@@ -137,7 +137,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ card, workspaceId, sectionId
             )}
 
             {isExpanded && (
-                <div className="mt-4 pt-4 border-t border-neutral-700">
+                <div className="mt-4 pt-4 border-t border-border-main">
                     <div className="space-y-2 mb-3">
                         {card.subtasks.map((st) => (
                             <div key={st.id} className="flex items-start gap-2 group/subtask">
@@ -145,16 +145,16 @@ export const TaskCard: React.FC<TaskCardProps> = ({ card, workspaceId, sectionId
                                     type="checkbox"
                                     checked={st.completed}
                                     onChange={() => toggleSubtaskComplete(workspaceId, sectionId, card.id, st.id)}
-                                    className="mt-1 flex-shrink-0 cursor-pointer w-4 h-4 rounded border-neutral-600 bg-neutral-700 checked:bg-blue-500 focus:ring-blue-500 focus:ring-offset-neutral-900"
+                                    className="mt-1 flex-shrink-0 cursor-pointer w-4 h-4 rounded border-border-hover bg-surface-hover checked:bg-primary focus:ring-primary focus:ring-offset-base"
                                 />
                                 <div className="flex-1">
-                                    <span className={clsx('text-sm', st.completed ? 'text-neutral-500 line-through' : 'text-neutral-200')}>
+                                    <span className={clsx('text-sm', st.completed ? 'text-text-muted line-through' : 'text-text-main')}>
                                         {st.title}
                                     </span>
                                 </div>
                                 <button
                                     onClick={() => deleteSubtask(workspaceId, sectionId, card.id, st.id)}
-                                    className="p-1 text-neutral-600 hover:text-red-400 opacity-0 group-hover/subtask:opacity-100 transition-opacity"
+                                    className="p-1 text-text-muted hover:text-red-500 opacity-0 group-hover/subtask:opacity-100 transition-opacity"
                                 >
                                     <X className="w-3.5 h-3.5" />
                                 </button>
@@ -168,12 +168,12 @@ export const TaskCard: React.FC<TaskCardProps> = ({ card, workspaceId, sectionId
                             placeholder="Add subtask..."
                             value={newSubtaskTitle}
                             onChange={(e) => setNewSubtaskTitle(e.target.value)}
-                            className="flex-1 bg-neutral-900 border border-neutral-700 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-blue-500 text-white placeholder-neutral-500"
+                            className="flex-1 bg-surface-hover border border-border-hover rounded px-2 py-1.5 text-xs focus:outline-none focus:border-primary text-text-main placeholder-text-muted"
                         />
                         <button
                             type="submit"
                             disabled={!newSubtaskTitle.trim()}
-                            className="bg-neutral-700 hover:bg-neutral-600 disabled:opacity-50 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
+                            className="bg-surface hover:bg-surface-hover border border-border-main disabled:opacity-50 text-text-main px-3 py-1.5 rounded text-xs font-medium transition-colors"
                         >
                             Add
                         </button>

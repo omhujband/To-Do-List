@@ -5,10 +5,15 @@ const defaultState: BoardState = {
     workspaces: [],
     globalTasks: [],
     activeWorkspaceId: null,
+    theme: 'ash',
 };
 
 type BoardContextType = {
     state: BoardState;
+
+    // Settings Actions
+    setTheme: (theme: string) => void;
+    clearAllData: () => void;
 
     // Workspace Actions
     createWorkspace: (title: string) => void;
@@ -59,8 +64,9 @@ export const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
             if (saved) {
                 const parsed = JSON.parse(saved);
-                // Ensure globalTasks exists for backward compatibility
+                // Backward compatibility
                 if (!parsed.globalTasks) parsed.globalTasks = [];
+                if (!parsed.theme || parsed.theme === 'onyx' || parsed.theme === 'emerald' || parsed.theme === 'blush' || parsed.theme === 'pearl') parsed.theme = 'ash';
                 // Reset active workspace on reload to always show dashboard
                 parsed.activeWorkspaceId = null;
                 return parsed;
@@ -74,6 +80,14 @@ export const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     useEffect(() => {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
     }, [state]);
+
+    const setTheme = (theme: string) => {
+        setState(prev => ({ ...prev, theme }));
+    };
+
+    const clearAllData = () => {
+        setState({ ...defaultState, theme: state.theme }); // Keep the theme, reset everything else
+    };
 
     const updateWorkspace = useCallback((workspaceId: string, updater: (w: Workspace) => Workspace) => {
         setState((prev) => ({
@@ -250,6 +264,8 @@ export const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         <BoardContext.Provider
             value={{
                 state,
+                setTheme,
+                clearAllData,
                 createWorkspace,
                 renameWorkspace,
                 deleteWorkspace,

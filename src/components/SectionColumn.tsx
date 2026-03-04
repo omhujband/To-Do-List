@@ -62,7 +62,7 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
             <div
                 ref={setNodeRef}
                 style={style}
-                className="flex-shrink-0 w-[320px] rounded-2xl opacity-50 flex flex-col max-h-full border border-neutral-700 bg-neutral-800/10"
+                className="flex-shrink-0 w-[320px] rounded-2xl opacity-50 flex flex-col max-h-full border border-border-hover bg-surface"
             />
         );
     }
@@ -90,12 +90,12 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
                                 if (e.key === 'Enter') handleRenameSubmit();
                                 if (e.key === 'Escape') setIsEditingTitle(false);
                             }}
-                            className="bg-[#1A1D24] border border-blue-500 rounded px-2 py-1 text-white font-bold text-lg focus:outline-none w-32"
+                            className="bg-surface-hover border border-primary rounded px-2 py-1 text-text-main font-bold text-lg focus:outline-none w-32"
                         />
                     ) : (
-                        <h3 className="font-bold text-lg text-white">{section.title}</h3>
+                        <h3 className="font-bold text-lg text-text-main">{section.title}</h3>
                     )}
-                    <span className="bg-[#1C202B] text-neutral-400 text-xs font-bold px-2 py-0.5 rounded-full">
+                    <span className="bg-surface border border-border-main text-text-muted text-xs font-bold px-2 py-0.5 rounded-full">
                         {section.cards.length}
                     </span>
                 </div>
@@ -107,26 +107,26 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
                             setMenuOpen(!menuOpen);
                             setConfirmDelete(false);
                         }}
-                        className="p-1 text-neutral-500 hover:text-white transition-colors"
+                        className="p-1 text-text-muted hover:text-text-main transition-colors"
                     >
                         <MoreHorizontal className="w-5 h-5" />
                     </button>
 
                     {menuOpen && (
-                        <div className="absolute right-0 top-full mt-1 w-40 bg-[#1A1D24] border border-neutral-800 rounded-lg shadow-xl overflow-hidden z-20">
+                        <div className="absolute right-0 top-full mt-1 w-40 bg-surface-hover border border-border-main rounded-lg shadow-xl overflow-hidden z-20">
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     setIsEditingTitle(true);
                                     setMenuOpen(false);
                                 }}
-                                className="w-full text-left px-4 py-2 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white flex items-center gap-2"
+                                className="w-full text-left px-4 py-2 text-sm text-text-muted hover:bg-surface hover:text-text-main flex items-center gap-2"
                             >
                                 <Pencil className="w-4 h-4" /> Rename
                             </button>
                             {confirmDelete ? (
-                                <div className="px-4 py-2 flex items-center justify-between border-t border-neutral-800 bg-red-900/20" onClick={(e) => e.stopPropagation()}>
-                                    <span className="text-sm font-medium text-red-400">Sure?</span>
+                                <div className="px-4 py-2 flex items-center justify-between border-t border-border-hover bg-red-500/10" onClick={(e) => e.stopPropagation()}>
+                                    <span className="text-sm font-medium text-red-500">Sure?</span>
                                     <div className="flex gap-1">
                                         <button
                                             onClick={(e) => {
@@ -143,7 +143,7 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
                                                 e.stopPropagation();
                                                 setConfirmDelete(false);
                                             }}
-                                            className="px-2 py-1 text-xs bg-neutral-600 hover:bg-neutral-500 text-white rounded"
+                                            className="px-2 py-1 text-xs bg-surface border border-border-main hover:bg-surface-hover text-text-main rounded"
                                         >
                                             No
                                         </button>
@@ -155,7 +155,7 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
                                         e.stopPropagation();
                                         setConfirmDelete(true);
                                     }}
-                                    className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-neutral-800/80 flex items-center gap-2 border-t border-neutral-800"
+                                    className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-500/10 flex items-center gap-2 border-t border-border-main"
                                 >
                                     <Trash2 className="w-4 h-4" /> Delete
                                 </button>
@@ -173,13 +173,13 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
                 </SortableContext>
 
                 {isAddingCard ? (
-                    <form onSubmit={handleAddCard} className="mt-2 bg-[#1A1D24] p-3 rounded-2xl border border-blue-500">
+                    <form onSubmit={handleAddCard} className="mt-2 bg-surface p-3 rounded-2xl border border-primary">
                         <textarea
                             autoFocus
                             value={newCardTitle}
                             onChange={(e) => setNewCardTitle(e.target.value)}
                             placeholder="Task name"
-                            className="w-full bg-transparent border-none text-white text-sm focus:outline-none resize-none"
+                            className="w-full bg-transparent border-none text-text-main text-sm focus:outline-none resize-none"
                             rows={2}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -193,14 +193,14 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
                             <button
                                 type="submit"
                                 disabled={!newCardTitle.trim()}
-                                className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+                                className="bg-primary hover:bg-primary-hover disabled:opacity-50 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
                             >
                                 Add Task
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setIsAddingCard(false)}
-                                className="text-neutral-400 hover:text-white px-2 py-1.5 text-xs font-semibold transition-colors"
+                                className="text-text-muted hover:text-text-main px-2 py-1.5 text-xs font-semibold transition-colors"
                             >
                                 Cancel
                             </button>
@@ -209,7 +209,7 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
                 ) : (
                     <button
                         onClick={() => setIsAddingCard(true)}
-                        className="w-full py-4 flex items-center justify-center gap-2 text-neutral-500 hover:text-white border border-dashed border-neutral-800 hover:border-neutral-600 rounded-2xl transition-all font-semibold text-sm mt-2 bg-[#13151D]/50"
+                        className="w-full py-4 flex items-center justify-center gap-2 text-text-muted hover:text-text-main border border-dashed border-border-main hover:border-border-hover rounded-2xl transition-all font-semibold text-sm mt-2 bg-surface/50 hover:bg-surface-hover/50"
                     >
                         <Plus className="w-4 h-4" /> Add Task
                     </button>

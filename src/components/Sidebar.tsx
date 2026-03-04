@@ -1,13 +1,15 @@
 import React from 'react';
 import { Layout, CheckCircle2, Folder, Settings, CheckSquare } from 'lucide-react';
 import { useBoard } from '../context/BoardContext';
+import { clsx } from 'clsx';
 
 interface SidebarProps {
     activeTab: string;
     setActiveTab: (tab: string) => void;
+    onOpenSettings: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpenSettings }) => {
     const { openWorkspace } = useBoard();
 
     const navItems = [
@@ -24,15 +26,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
     };
 
     return (
-        <aside className="w-64 h-screen flex flex-col bg-[#11121A] text-white border-r border-neutral-800 shrink-0">
+        <aside className="w-64 h-screen flex flex-col bg-sidebar text-text-main border-r border-border-main shrink-0">
             {/* Logo Area */}
             <div className="p-6 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                     <CheckSquare className="w-5 h-5 text-white" />
                 </div>
                 <div>
                     <h1 className="font-bold text-lg leading-tight">To-Do-List</h1>
-                    <p className="text-xs text-neutral-400">Premium Workspace</p>
+                    <p className="text-xs text-text-muted">Premium Workspace</p>
                 </div>
             </div>
 
@@ -45,10 +47,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
                         <button
                             key={item.id}
                             onClick={() => handleNavClick(item.id)}
-                            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive
-                                ? 'bg-blue-600/10 text-blue-500'
-                                : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
-                                }`}
+                            className={clsx(
+                                "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                                isActive
+                                    ? "bg-primary-light text-primary"
+                                    : "text-text-muted hover:text-text-main hover:bg-surface-hover"
+                            )}
                         >
                             <Icon className="w-5 h-5" />
                             {item.label}
@@ -59,7 +63,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
 
             {/* Settings & Bottom Area */}
             <div className="p-4 space-y-2">
-                <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-400 hover:text-white hover:bg-neutral-800/50 transition-colors">
+                <button
+                    onClick={onOpenSettings}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-text-muted hover:text-text-main hover:bg-surface-hover transition-colors"
+                >
                     <Settings className="w-5 h-5" />
                     Settings
                 </button>

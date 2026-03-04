@@ -4,10 +4,12 @@ import { Home } from './components/Home';
 import { Board } from './components/Board';
 import { Sidebar } from './components/Sidebar';
 import { MyTasks } from './components/MyTasks';
+import { SettingsModal } from './components/SettingsModal';
 
 const AppContent: React.FC = () => {
   const { state } = useBoard();
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   let content;
   if (state.activeWorkspaceId) {
@@ -18,19 +20,28 @@ const AppContent: React.FC = () => {
     content = <MyTasks />;
   } else {
     content = (
-      <div className="p-8 text-center text-neutral-400 pt-24">
-        <h2 className="text-2xl font-bold text-white mb-2 capitalize">{activeTab.replace('-', ' ')}</h2>
+      <div className="p-8 text-center text-text-muted pt-24">
+        <h2 className="text-2xl font-bold text-text-main mb-2 capitalize">{activeTab.replace('-', ' ')}</h2>
         <p>This view is under construction. Please use the Dashboard for now.</p>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#0F1218] font-sans antialiased text-white">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-      <div className="flex-1 overflow-auto bg-[#0F1218]">
+    <div data-theme={state.theme} className="flex h-screen overflow-hidden bg-base font-sans antialiased text-text-main">
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+      />
+      <div className="flex-1 overflow-auto bg-base">
         {content}
       </div>
+
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
     </div>
   );
 };

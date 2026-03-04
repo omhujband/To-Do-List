@@ -32,7 +32,7 @@ export const Board: React.FC = () => {
     );
 
     if (!activeWorkspace) {
-        return <div className="text-white p-8">Workspace not found</div>;
+        return <div className="text-text-main p-8">Workspace not found</div>;
     }
 
     const handleAddSection = (e: React.FormEvent) => {
@@ -148,37 +148,37 @@ export const Board: React.FC = () => {
     };
 
     return (
-        <div className="min-h-full bg-[#0F1218] flex flex-col text-white">
+        <div className="min-h-full bg-base flex flex-col text-text-main">
             {/* Top Navigation Bar Component (Mocked for Board layout) */}
-            <header className="px-8 h-20 flex items-center justify-between border-b border-neutral-800 shrink-0">
+            <header className="px-8 h-20 flex items-center justify-between border-b border-border-main shrink-0">
                 <div className="flex items-center gap-6">
                     <button
                         onClick={() => openWorkspace(null)}
-                        className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors"
+                        className="flex items-center gap-2 text-text-muted hover:text-text-main transition-colors"
                         title="Back to Workspaces"
                     >
                         <ArrowLeft className="w-4 h-4" />
                     </button>
                     <div className="flex items-center gap-2 font-bold text-lg">
-                        <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
+                        <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
                             <LayoutGrid className="w-4 h-4 text-white" />
                         </div>
                         Workspace
                     </div>
-                    <nav className="flex items-center gap-6 ml-6 text-sm font-medium text-neutral-400">
-                        <button className="text-white border-b-2 border-blue-600 py-7">Board</button>
-                        <button className="hover:text-white transition-colors">Timeline</button>
-                        <button className="hover:text-white transition-colors">Calendar</button>
+                    <nav className="flex items-center gap-6 ml-6 text-sm font-medium text-text-muted">
+                        <button className="text-text-main border-b-2 border-primary py-7">Board</button>
+                        <button className="hover:text-text-main transition-colors">Timeline</button>
+                        <button className="hover:text-text-main transition-colors">Calendar</button>
                     </nav>
                 </div>
 
                 <div className="flex items-center gap-4">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                         <input
                             type="text"
                             placeholder="Search tasks..."
-                            className="bg-[#1A1D24] border border-neutral-800 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-blue-500 text-white placeholder-neutral-500 w-64"
+                            className="bg-surface-hover border border-border-main rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-primary text-text-main placeholder-text-muted w-64"
                         />
                     </div>
                 </div>
@@ -187,20 +187,20 @@ export const Board: React.FC = () => {
             {/* Board Header Title Area */}
             <div className="px-8 py-8 shrink-0 flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight mb-2 text-white">
+                    <h1 className="text-3xl font-bold tracking-tight mb-2 text-text-main">
                         {activeWorkspace.title}
                     </h1>
-                    <p className="text-neutral-400 text-sm">
+                    <p className="text-text-muted text-sm">
                         Manage project stages and upcoming milestones
                     </p>
                 </div>
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-semibold flex items-center gap-2 transition-colors">
+                <button className="bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg font-semibold flex items-center gap-2 transition-colors">
                     <Plus className="w-5 h-5" />
                     New Task
                 </button>
             </div>
 
-            <main className="flex-1 overflow-x-auto overflow-y-hidden px-8 pb-4">
+            <main className="flex-1 overflow-x-auto overflow-y-hidden px-8 pb-4 custom-scrollbar">
                 <DndContext
                     sensors={sensors}
                     collisionDetection={closestCorners}
@@ -221,14 +221,14 @@ export const Board: React.FC = () => {
                         {/* Add Section Button */}
                         <div className="flex-shrink-0 w-80">
                             {isAddingSection ? (
-                                <form onSubmit={handleAddSection} className="bg-[#13151D] border border-blue-500 p-3 rounded-2xl">
+                                <form onSubmit={handleAddSection} className="bg-surface border border-primary p-3 rounded-2xl">
                                     <input
                                         autoFocus
                                         type="text"
                                         value={newSectionTitle}
                                         onChange={(e) => setNewSectionTitle(e.target.value)}
                                         placeholder="Section title..."
-                                        className="w-full bg-[#1A1D24] border border-neutral-700 rounded-xl px-3 py-2 text-white font-semibold focus:outline-none focus:border-blue-500 mb-3"
+                                        className="w-full bg-surface-hover border border-border-hover rounded-xl px-3 py-2 text-text-main font-semibold focus:outline-none focus:border-primary mb-3"
                                         onKeyDown={(e) => {
                                             if (e.key === 'Escape') setIsAddingSection(false);
                                         }}
@@ -237,14 +237,14 @@ export const Board: React.FC = () => {
                                         <button
                                             type="submit"
                                             disabled={!newSectionTitle.trim()}
-                                            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                                            className="bg-primary hover:bg-primary-hover disabled:opacity-50 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors"
                                         >
                                             Add Section
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => setIsAddingSection(false)}
-                                            className="text-neutral-400 hover:text-white px-3 py-1.5 text-sm font-medium transition-colors"
+                                            className="text-text-muted hover:text-text-main px-3 py-1.5 text-sm font-medium transition-colors"
                                         >
                                             Cancel
                                         </button>
@@ -253,9 +253,9 @@ export const Board: React.FC = () => {
                             ) : (
                                 <button
                                     onClick={() => setIsAddingSection(true)}
-                                    className="w-full h-24 bg-[#161923] hover:bg-[#1A1D24] border border-[#2A2E39] border-dashed rounded-2xl flex items-center justify-center gap-2 text-neutral-400 hover:text-white font-semibold transition-all"
+                                    className="w-full h-24 bg-surface-hover hover:bg-surface border border-border-hover border-dashed rounded-2xl flex items-center justify-center gap-2 text-text-muted hover:text-text-main font-semibold transition-all"
                                 >
-                                    <Plus className="w-5 h-5 text-neutral-500" />
+                                    <Plus className="w-5 h-5 text-text-muted" />
                                     Add New Section
                                 </button>
                             )}
