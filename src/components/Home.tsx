@@ -23,6 +23,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab }) => {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingTitle, setEditingTitle] = useState('');
     const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const handleCreate = (e: React.FormEvent) => {
         e.preventDefault();
@@ -49,7 +50,9 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab }) => {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
                     <input
                         type="text"
-                        placeholder="Search tasks, teams, or documents..."
+                        placeholder="Search workspaces..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full bg-surface border border-border-main rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-primary text-text-main placeholder-text-muted transition-colors"
                     />
                 </div>
@@ -112,83 +115,100 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab }) => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-12">
-                    {state.workspaces.map((ws, i) => {
-                        const gradient = gradients[i % gradients.length];
-                        const itemsCount = ws.sections.reduce((acc, s) => acc + s.cards.length, 0);
+                    {state.workspaces
+                        .filter(ws => ws.title.toLowerCase().includes(searchQuery.toLowerCase()))
+                        .map((ws, i) => {
+                            const gradient = gradients[i % gradients.length];
+                            const itemsCount = ws.sections.reduce((acc, s) => acc + s.cards.length, 0);
 
-                        return (
-                            <div
-                                key={ws.id}
-                                className="group relative bg-surface border border-border-main rounded-2xl p-4 cursor-pointer hover:border-primary/50 transition-all hover:bg-surface-hover shadow-sm"
-                                onClick={() => openWorkspace(ws.id)}
-                            >
-                                <div className={`h-36 rounded-xl bg-gradient-to-br ${gradient} mb-4 relative overflow-hidden flex items-center justify-center opacity-90 group-hover:opacity-100 transition-opacity`}>
-                                    <div className="absolute inset-0 bg-white/5 mix-blend-overlay"></div>
+                            return (
+                                <div
+                                    key={ws.id}
+                                    className="group relative bg-surface border border-border-main rounded-2xl p-4 cursor-pointer hover:border-primary/50 transition-all hover:bg-surface-hover shadow-sm"
+                                    onClick={() => openWorkspace(ws.id)}
+                                >
+                                    <div className={`h-36 rounded-xl bg-gradient-to-br ${gradient} mb-4 relative overflow-hidden flex items-center justify-center opacity-90 group-hover:opacity-100 transition-opacity`}>
+                                        <div className="absolute inset-0 bg-white/5 mix-blend-overlay"></div>
 
-                                    <div className="absolute top-2 right-2">
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setActiveMenuId(activeMenuId === ws.id ? null : ws.id);
-                                            }}
-                                            className="w-8 h-8 rounded-lg bg-black/20 hover:bg-black/40 backdrop-blur-sm flex items-center justify-center transition-colors text-white"
-                                        >
-                                            <MoreVertical className="w-4 h-4" />
-                                        </button>
+                                        <div className="absolute top-2 right-2">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setActiveMenuId(activeMenuId === ws.id ? null : ws.id);
+                                                }}
+                                                className="w-8 h-8 rounded-lg bg-black/20 hover:bg-black/40 backdrop-blur-sm flex items-center justify-center transition-colors text-white"
+                                            >
+                                                <MoreVertical className="w-4 h-4" />
+                                            </button>
 
-                                        {activeMenuId === ws.id && (
-                                            <div className="absolute top-10 right-0 w-40 bg-surface border border-border-main rounded-lg shadow-xl overflow-hidden z-20">
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setEditingId(ws.id);
-                                                        setEditingTitle(ws.title);
-                                                    }}
-                                                    className="w-full text-left px-4 py-2 text-sm text-text-muted hover:bg-surface-hover hover:text-text-main flex items-center gap-2"
-                                                >
-                                                    <Settings className="w-4 h-4" /> Rename
-                                                </button>
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        deleteWorkspace(ws.id);
-                                                    }}
-                                                    className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-500/10 flex items-center gap-2 border-t border-border-main"
-                                                >
-                                                    <Trash2 className="w-4 h-4" /> Delete
-                                                </button>
-                                            </div>
+                                            {activeMenuId === ws.id && (
+                                                <div className="absolute top-10 right-0 w-40 bg-surface border border-border-main rounded-lg shadow-xl overflow-hidden z-20">
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setEditingId(ws.id);
+                                                            setEditingTitle(ws.title);
+                                                        }}
+                                                        className="w-full text-left px-4 py-2 text-sm text-text-muted hover:bg-surface-hover hover:text-text-main flex items-center gap-2"
+                                                    >
+                                                        <Settings className="w-4 h-4" /> Rename
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            deleteWorkspace(ws.id);
+                                                        }}
+                                                        className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-500/10 flex items-center gap-2 border-t border-border-main"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" /> Delete
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        {editingId === ws.id ? (
+                                            <form onClick={(e) => e.stopPropagation()} onSubmit={(e) => { e.preventDefault(); handleRename(ws.id); }}>
+                                                <input
+                                                    autoFocus
+                                                    type="text"
+                                                    value={editingTitle}
+                                                    onChange={(e) => setEditingTitle(e.target.value)}
+                                                    onBlur={() => handleRename(ws.id)}
+                                                    className="w-full bg-surface-hover border border-primary text-text-main rounded px-2 py-1 text-lg font-bold focus:outline-none mb-1"
+                                                />
+                                            </form>
+                                        ) : (
+                                            <h3 className="text-lg font-bold mb-1 group-hover:text-primary transition-colors">
+                                                {ws.title}
+                                            </h3>
                                         )}
+                                        <div className="flex items-center gap-2 mb-4">
+                                            <span className={clsx("w-2 h-2 rounded-full", itemsCount > 0 ? "bg-emerald-500" : "bg-neutral-500")}></span>
+                                            <p className="text-sm text-text-muted">
+                                                {itemsCount} {itemsCount === 1 ? 'task' : 'tasks'} in progress
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-
-                                <div>
-                                    {editingId === ws.id ? (
-                                        <form onClick={(e) => e.stopPropagation()} onSubmit={(e) => { e.preventDefault(); handleRename(ws.id); }}>
-                                            <input
-                                                autoFocus
-                                                type="text"
-                                                value={editingTitle}
-                                                onChange={(e) => setEditingTitle(e.target.value)}
-                                                onBlur={() => handleRename(ws.id)}
-                                                className="w-full bg-surface-hover border border-primary text-text-main rounded px-2 py-1 text-lg font-bold focus:outline-none mb-1"
-                                            />
-                                        </form>
-                                    ) : (
-                                        <h3 className="text-lg font-bold mb-1 group-hover:text-primary transition-colors">
-                                            {ws.title}
-                                        </h3>
-                                    )}
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <span className={clsx("w-2 h-2 rounded-full", itemsCount > 0 ? "bg-emerald-500" : "bg-neutral-500")}></span>
-                                        <p className="text-sm text-text-muted">
-                                            {itemsCount} {itemsCount === 1 ? 'task' : 'tasks'} in progress
-                                        </p>
-                                    </div>
-                                </div>
+                            );
+                        })}
+                    {state.workspaces.filter(ws => ws.title.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && searchQuery && (
+                        <div className="col-span-full py-20 text-center">
+                            <div className="w-16 h-16 bg-surface-hover rounded-2xl flex items-center justify-center mb-4 border border-border-main mx-auto">
+                                <Search className="w-8 h-8 text-text-muted" />
                             </div>
-                        );
-                    })}
+                            <h3 className="text-xl font-bold mb-1">No workspaces found</h3>
+                            <p className="text-text-muted">No workspaces match your search for "{searchQuery}"</p>
+                            <button 
+                                onClick={() => setSearchQuery('')}
+                                className="mt-4 text-primary font-semibold hover:underline"
+                            >
+                                Clear search
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Banner block */}

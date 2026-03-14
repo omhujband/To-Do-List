@@ -23,6 +23,7 @@ export const Board: React.FC = () => {
     const [activeSection, setActiveSection] = useState<Section | null>(null);
     const [isAddingSection, setIsAddingSection] = useState(false);
     const [newSectionTitle, setNewSectionTitle] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
     const activeWorkspace = state.workspaces.find((w) => w.id === state.activeWorkspaceId);
 
@@ -33,6 +34,16 @@ export const Board: React.FC = () => {
 
     if (!activeWorkspace) {
         return <div className="text-text-main p-8">Workspace not found</div>;
+    }
+
+    const totalCols = activeWorkspace.sections.length + 1;
+    let columnWidthClass = 'w-[320px]';
+    if (totalCols <= 2) {
+        columnWidthClass = 'w-[360px]';
+    } else if (totalCols === 3) {
+        columnWidthClass = 'w-[calc(33.333%-16px)]';
+    } else {
+        columnWidthClass = 'w-[calc(25%-18px)] min-w-[280px]';
     }
 
     const handleAddSection = (e: React.FormEvent) => {
@@ -176,7 +187,9 @@ export const Board: React.FC = () => {
                         <input
                             type="text"
                             placeholder="Search tasks..."
-                            className="bg-surface-hover border border-border-main rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-primary text-text-main placeholder-text-muted w-64"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="bg-surface-hover border border-border-main rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-primary text-text-main placeholder-text-muted w-64 transition-all"
                         />
                     </div>
                 </div>
@@ -212,12 +225,18 @@ export const Board: React.FC = () => {
                             strategy={horizontalListSortingStrategy}
                         >
                             {activeWorkspace.sections.map((section) => (
-                                <SectionColumn key={section.id} section={section} workspaceId={activeWorkspace.id} />
+                                <SectionColumn 
+                                    key={section.id} 
+                                    section={section} 
+                                    workspaceId={activeWorkspace.id} 
+                                    columnWidthClass={columnWidthClass}
+                                    searchQuery={searchQuery}
+                                />
                             ))}
                         </SortableContext>
 
                         {/* Add Section Button */}
-                        <div className="flex-shrink-0 w-80">
+                        <div className={`flex-shrink-0 ${columnWidthClass} transition-all duration-300`}>
                             {isAddingSection ? (
                                 <form onSubmit={handleAddSection} className="bg-surface border border-primary p-3 rounded-2xl">
                                     <input
@@ -269,7 +288,12 @@ export const Board: React.FC = () => {
                             />
                         ) : null}
                         {activeSection ? (
-                            <SectionColumn section={activeSection} workspaceId={activeWorkspace.id} />
+                            <SectionColumn 
+                                section={activeSection} 
+                                workspaceId={activeWorkspace.id} 
+                                columnWidthClass={columnWidthClass}
+                                searchQuery={searchQuery}
+                            />
                         ) : null}
                     </DragOverlay>
                 </DndContext>

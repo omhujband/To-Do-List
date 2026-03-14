@@ -9,9 +9,11 @@ import { MoreHorizontal, Plus, Trash2, Pencil } from 'lucide-react';
 interface SectionColumnProps {
     section: SectionType;
     workspaceId: string;
+    columnWidthClass?: string;
+    searchQuery?: string;
 }
 
-export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspaceId }) => {
+export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspaceId, columnWidthClass = 'w-[320px]', searchQuery = '' }) => {
     const { createCard, deleteSection, renameSection } = useBoard();
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [editedTitle, setEditedTitle] = useState(section.title);
@@ -62,16 +64,24 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
             <div
                 ref={setNodeRef}
                 style={style}
-                className="flex-shrink-0 w-[320px] rounded-2xl opacity-50 flex flex-col max-h-full border border-border-hover bg-surface"
+                className={`flex-shrink-0 ${columnWidthClass} rounded-2xl opacity-50 flex flex-col max-h-full border border-border-hover bg-surface transition-all duration-300`}
             />
         );
     }
+
+    const filteredCards = section.cards.filter(c => {
+        if (!searchQuery.trim()) return true;
+        const query = searchQuery.toLowerCase();
+        if (c.title.toLowerCase().includes(query)) return true;
+        if (c.subtasks.some(st => st.title.toLowerCase().includes(query))) return true;
+        return false;
+    });
 
     return (
         <div
             ref={setNodeRef}
             style={style}
-            className="flex-shrink-0 w-[320px] rounded-2xl flex flex-col max-h-full"
+            className={`flex-shrink-0 ${columnWidthClass} rounded-2xl flex flex-col max-h-full transition-all duration-300`}
         >
             <div
                 {...attributes}
@@ -166,8 +176,8 @@ export const SectionColumn: React.FC<SectionColumnProps> = ({ section, workspace
             </div>
 
             <div className="flex-1 overflow-y-auto pb-4 min-h-[150px] space-y-4 custom-scrollbar">
-                <SortableContext items={section.cards.map((c) => c.id)} strategy={verticalListSortingStrategy}>
-                    {section.cards.map((card) => (
+                <SortableContext items={filteredCards.map((c) => c.id)} strategy={verticalListSortingStrategy}>
+                    {filteredCards.map((card) => (
                         <TaskCard key={card.id} card={card} workspaceId={workspaceId} sectionId={section.id} />
                     ))}
                 </SortableContext>
