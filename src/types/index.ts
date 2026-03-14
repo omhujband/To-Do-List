@@ -1,12 +1,14 @@
 export interface Subtask {
     id: string;
     title: string;
+    description?: string;
     completed: boolean;
 }
 
 export interface Card {
     id: string;
     title: string;
+    description?: string;
     subtasks: Subtask[];
 }
 

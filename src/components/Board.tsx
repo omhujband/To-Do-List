@@ -167,8 +167,6 @@ export const Board: React.FC = () => {
                     </div>
                     <nav className="flex items-center gap-6 ml-6 text-sm font-medium text-text-muted">
                         <button className="text-text-main border-b-2 border-primary py-7">Board</button>
-                        <button className="hover:text-text-main transition-colors">Timeline</button>
-                        <button className="hover:text-text-main transition-colors">Calendar</button>
                     </nav>
                 </div>
 

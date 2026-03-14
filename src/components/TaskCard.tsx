@@ -3,8 +3,9 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { Card as CardType } from '../types';
 import { useBoard } from '../context/BoardContext';
-import { Trash2, GripVertical, CheckSquare, Pencil, X } from 'lucide-react';
+import { Trash2, GripVertical, CheckSquare, Pencil } from 'lucide-react';
 import { clsx } from 'clsx';
+import { TaskModal } from './TaskModal';
 
 interface TaskCardProps {
     card: CardType;
@@ -13,11 +14,10 @@ interface TaskCardProps {
 }
 
 export const TaskCard: React.FC<TaskCardProps> = ({ card, workspaceId, sectionId }) => {
-    const { deleteCard, renameCard, createSubtask, toggleSubtaskComplete, deleteSubtask } = useBoard();
+    const { deleteCard, renameCard } = useBoard();
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [editedTitle, setEditedTitle] = useState(card.title);
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
         id: card.id,
@@ -43,14 +43,6 @@ export const TaskCard: React.FC<TaskCardProps> = ({ card, workspaceId, sectionId
         }
     };
 
-    const handleAddSubtask = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (newSubtaskTitle.trim()) {
-            createSubtask(workspaceId, sectionId, card.id, newSubtaskTitle.trim());
-            setNewSubtaskTitle('');
-        }
-    };
-
     if (isDragging) {
         return (
             <div
@@ -62,22 +54,25 @@ export const TaskCard: React.FC<TaskCardProps> = ({ card, workspaceId, sectionId
     }
 
     return (
-        <div
-            ref={setNodeRef}
-            style={style}
-            className="bg-surface border border-border-main rounded-xl p-4 group cursor-default hover:border-border-hover transition-colors shadow-sm"
-        >
-            <div className="flex items-start gap-2 mb-3">
-                <div
-                    {...attributes}
-                    {...listeners}
-                    className="mt-1 cursor-grab text-text-muted hover:text-text-main transition-colors"
-                >
+        <>
+            <div
+                ref={setNodeRef}
+                style={style}
+                onClick={() => !isEditingTitle && setIsModalOpen(true)}
+                className="bg-surface border border-border-main rounded-xl p-4 group cursor-pointer hover:border-border-hover transition-colors shadow-sm"
+            >
+                <div className="flex items-start gap-2 mb-3">
+                    <div
+                        {...attributes}
+                        {...listeners}
+                        onClick={(e) => e.stopPropagation()}
+                        className="mt-1 cursor-grab text-text-muted hover:text-text-main transition-colors"
+                    >
                     <GripVertical className="w-5 h-5" />
                 </div>
                 <div className="flex-1 min-w-0">
                     {isEditingTitle ? (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                             <input
                                 autoFocus
                                 type="text"
@@ -92,16 +87,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({ card, workspaceId, sectionId
                             />
                         </div>
                     ) : (
-                        <h4
-                            onClick={() => setIsExpanded(!isExpanded)}
-                            className="text-text-main font-medium text-sm break-words cursor-pointer hover:text-primary transition-colors"
-                        >
+                        <h4 className="text-text-main font-medium text-sm break-words transition-colors">
                             {card.title}
                         </h4>
                     )}
                 </div>
                 {!isEditingTitle && (
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
                         <button
                             onClick={() => setIsEditingTitle(true)}
                             className="p-1 text-text-muted hover:text-text-main hover:bg-surface-hover rounded"
@@ -119,10 +111,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ card, workspaceId, sectionId
             </div>
 
             {totalSubtasks > 0 && (
-                <div
-                    className="flex items-center gap-2 text-xs font-medium cursor-pointer"
-                    onClick={() => setIsExpanded(!isExpanded)}
-                >
+                <div className="flex items-center gap-2 text-xs font-medium mt-1">
                     <CheckSquare className="w-4 h-4 text-text-muted" />
                     <span className={clsx(completedSubtasks === totalSubtasks ? 'text-emerald-500' : 'text-text-muted')}>
                         {completedSubtasks}/{totalSubtasks}
@@ -135,51 +124,17 @@ export const TaskCard: React.FC<TaskCardProps> = ({ card, workspaceId, sectionId
                     </div>
                 </div>
             )}
+            </div>
 
-            {isExpanded && (
-                <div className="mt-4 pt-4 border-t border-border-main">
-                    <div className="space-y-2 mb-3">
-                        {card.subtasks.map((st) => (
-                            <div key={st.id} className="flex items-start gap-2 group/subtask">
-                                <input
-                                    type="checkbox"
-                                    checked={st.completed}
-                                    onChange={() => toggleSubtaskComplete(workspaceId, sectionId, card.id, st.id)}
-                                    className="mt-1 flex-shrink-0 cursor-pointer w-4 h-4 rounded border-border-hover bg-surface-hover checked:bg-primary focus:ring-primary focus:ring-offset-base"
-                                />
-                                <div className="flex-1">
-                                    <span className={clsx('text-sm', st.completed ? 'text-text-muted line-through' : 'text-text-main')}>
-                                        {st.title}
-                                    </span>
-                                </div>
-                                <button
-                                    onClick={() => deleteSubtask(workspaceId, sectionId, card.id, st.id)}
-                                    className="p-1 text-text-muted hover:text-red-500 opacity-0 group-hover/subtask:opacity-100 transition-opacity"
-                                >
-                                    <X className="w-3.5 h-3.5" />
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-
-                    <form onSubmit={handleAddSubtask} className="flex gap-2">
-                        <input
-                            type="text"
-                            placeholder="Add subtask..."
-                            value={newSubtaskTitle}
-                            onChange={(e) => setNewSubtaskTitle(e.target.value)}
-                            className="flex-1 bg-surface-hover border border-border-hover rounded px-2 py-1.5 text-xs focus:outline-none focus:border-primary text-text-main placeholder-text-muted"
-                        />
-                        <button
-                            type="submit"
-                            disabled={!newSubtaskTitle.trim()}
-                            className="bg-surface hover:bg-surface-hover border border-border-main disabled:opacity-50 text-text-main px-3 py-1.5 rounded text-xs font-medium transition-colors"
-                        >
-                            Add
-                        </button>
-                    </form>
-                </div>
+            {isModalOpen && (
+                <TaskModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    card={card}
+                    workspaceId={workspaceId}
+                    sectionId={sectionId}
+                />
             )}
-        </div>
+        </>
     );
 };

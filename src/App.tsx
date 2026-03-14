@@ -7,9 +7,21 @@ import { MyTasks } from './components/MyTasks';
 import { SettingsModal } from './components/SettingsModal';
 
 const AppContent: React.FC = () => {
-  const { state } = useBoard();
+  const { state, openWorkspace } = useBoard();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    if (tab !== 'dashboard') {
+      openWorkspace(null);
+    } else {
+        // Option to reset workspace when clicking dashboard, or keep it if they want to go back to dashboard. 
+        // The instructions say: "When a user navigates to a different page through the sidebar, the currently open workspace board must fully transition out of view".
+        // It's safest to just clear it whenever a tab is clicked, even dashboard. 
+        openWorkspace(null);
+    }
+  };
 
   let content;
   if (state.activeWorkspaceId) {
@@ -31,7 +43,7 @@ const AppContent: React.FC = () => {
     <div data-theme={state.theme} className="flex h-screen overflow-hidden bg-base font-sans antialiased text-text-main">
       <Sidebar
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={handleTabChange}
         onOpenSettings={() => setIsSettingsOpen(true)}
       />
       <div className="flex-1 overflow-auto bg-base">
